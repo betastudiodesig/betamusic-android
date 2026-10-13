@@ -49,8 +49,7 @@ jobs:
         working-directory: project/android-app
         run: npx cap add android
 
-      - name: Apply application icons
-        run: node project/scripts/prepare-android-native.mjs project/android-app/android
+    
 
       - name: Synchronize application
         working-directory: project/android-app
