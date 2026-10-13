@@ -18,7 +18,10 @@ jobs:
         run: |
           mkdir native-project
           unzip -q BetaMusic-Native-Android.zip -d native-project
-          find native-project -maxdepth 3 -type f | head -80
+          echo "Contenido del ZIP:"
+          find native-project -maxdepth 5 -type f | head -100
+          echo "Buscando Gradle Wrapper:"
+          find native-project -type f -name gradlew
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -31,8 +34,13 @@ jobs:
 
       - name: Build APK
         run: |
-          cd native-project
-          PROJECT_DIR="$(find . -name settings.gradle.kts -o -name settings.gradle | head -1 | xargs dirname)"
+          GRADLEW="$(find "$GITHUB_WORKSPACE/native-project" -type f -name gradlew | head -1)"
+          if [ -z "$GRADLEW" ]; then
+            echo "ERROR: No se encontró gradlew en el ZIP."
+            exit 1
+          fi
+          PROJECT_DIR="$(dirname "$GRADLEW")"
+          echo "Proyecto encontrado en: $PROJECT_DIR"
           cd "$PROJECT_DIR"
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug
